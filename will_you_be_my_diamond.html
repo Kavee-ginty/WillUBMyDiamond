@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Will You Be My Diamond?</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #ffe6eb;
+      color: red;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .loader {
+      height: 100vh;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      flex-direction: column;
+      position: relative;
+      z-index: 2;
+    }
+
+    .main-content {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      position: relative;
+      z-index: 2;
+    }
+
+    .question-container {
+      max-width: 90%;
+      margin-top: 40px;
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .speech-bubble {
+      background: #ffe6eb;
+      border: 2px solid red;
+      border-radius: 15px;
+      padding: 15px 25px;
+      font-size: 1.5rem;
+      white-space: pre-line;
+      max-width: 300px;
+      margin-bottom: 20px;
+    }
+
+    .answers button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      margin: 8px;
+      border: none;
+      border-radius: 20px;
+      background-color: black;
+      color: white;
+      cursor: pointer;
+      min-width: 100px;
+    }
+
+    .answers button:hover {
+      background-color: crimson;
+    }
+
+    .final {
+      font-size: 2.5rem;
+      color: red;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 1s ease;
+      white-space: pre-line;
+      margin-top: 40px;
+      max-width: 90%;
+      position: relative;
+      z-index: 2;
+    }
+
+    .final.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .accept-btn {
+      display: none;
+      margin-top: 30px;
+      padding: 15px 40px;
+      font-size: 1.2rem;
+      color: white;
+      background-color: black;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      transform: rotate(45deg);
+      animation: floatHearts 10s linear infinite;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      top: -10px;
+      left: 0;
+    }
+
+    .heart::after {
+      top: 0;
+      left: -10px;
+    }
+
+    @keyframes floatHearts {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(-100vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    .penguin {
+      position: fixed;
+      width: 60px;
+      z-index: 2;
+      animation: wander 20s linear infinite;
+    }
+
+    @keyframes wander {
+      0% {
+        left: 5vw;
+        top: 10vh;
+        transform: rotate(0deg);
+      }
+
+      20% {
+        left: 40vw;
+        top: 20vh;
+        transform: rotate(90deg);
+      }
+
+      40% {
+        left: 70vw;
+        top: 50vh;
+        transform: rotate(180deg);
+      }
+
+      60% {
+        left: 30vw;
+        top: 70vh;
+        transform: rotate(270deg);
+      }
+
+      80% {
+        left: 10vw;
+        top: 40vh;
+        transform: rotate(360deg);
+      }
+
+      100% {
+        left: 5vw;
+        top: 10vh;
+        transform: rotate(0deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="loader" id="loader">Preparing something lovely<br> for you...</div>
+
+  <div class="main-content" id="main">
+    <div class="question-container" id="quiz">
+      <div class="speech-bubble" id="question"></div>
+      <div class="answers" id="answers"></div>
+    </div>
+    <div class="final" id="final"></div>
+    <button class="accept-btn" id="acceptBtn" onclick="handleAccept()">I lost words</button>
+  </div>
+
+  <div class="hearts" id="hearts"></div>
+  <img class="penguin" src="https://i.ibb.co/kgDgBcYr/360-F-910562062-011-At-TMC7-MDv-X1k-C7plgt-Fe-EInp9-Ooc-U.png"
+    alt="Penguin" onclick="alert('Hey sleeping beauty, Don\'t get distracted by the Handsome penguin 🐧')" />
+
+
+  <audio id="clickSound" src="click.mp3" preload="auto"></audio>
+  <audio id="bgMusic" src="bg.mp3" preload="auto" loop></audio>
+
+  <script>
+    const questions = [
+      { q: "How do penguins prove love?", options: ["Flowers", "Round rock", "Fish"], answer: "Round rock" },
+      { q: "She bought us lime juice from?", options: ["Roots", "Keels", "Bakers"], answer: "Roots" },
+      { q: "The red heart was made of?", options: ["Ink", "Pebbles", "Pixels"], answer: "Pebbles" },
+      { q: "Void loop() {...} ?", options: ["printf()", "scanf()", "♥️"], answer: "♥️" },
+      { q: "The girl in his head is?", options: ["Dimanya", "Dimanya", "Dimanya"], answer: "Dimanya" }
+    ];
+
+    let current = 0;
+
+    function playClickSound() {
+      const audio = document.getElementById('clickSound');
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play();
+      }
+    }
+
+    function showQuestion() {
+      const qBox = document.getElementById('question');
+      const aBox = document.getElementById('answers');
+      qBox.style.opacity = 0;
+      aBox.innerHTML = '';
+
+      setTimeout(() => {
+        qBox.textContent = questions[current].q;
+        qBox.style.opacity = 1;
+
+        questions[current].options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.textContent = opt;
+          btn.onclick = () => {
+            playClickSound();
+            if (opt === questions[current].answer) {
+              setTimeout(() => {
+                current++;
+                if (current >= questions.length) {
+                  document.getElementById('quiz').style.display = 'none';
+                  showFinalQuestion();
+                } else {
+                  showQuestion();
+                }
+              }, 800);
+            } else {
+              alert('Try again 💕');
+            }
+          };
+          aBox.appendChild(btn);
+        });
+      }, 1000);
+    }
+
+    function showFinalQuestion() {
+      const finalDiv = document.getElementById('final');
+      const acceptBtn = document.getElementById('acceptBtn');
+      const lines = ["Will", "You", "Be", "My", "Diamond?"];
+      let idx = 0;
+
+      function typeLine() {
+        if (idx < lines.length) {
+          const word = document.createElement('div');
+          word.textContent = lines[idx];
+          word.style.fontWeight = 'bold';
+          word.style.fontSize = '2.2rem';
+          finalDiv.appendChild(word);
+          idx++;
+          setTimeout(typeLine, 1000);
+        } else {
+          finalDiv.classList.add('show');
+          setTimeout(() => {
+            acceptBtn.style.display = 'inline-block';
+          }, 6000);
+        }
+      }
+
+      finalDiv.innerHTML = '';
+      typeLine();
+    }
+
+    function handleAccept() {
+      alert("Now Dimaa says \"Yes I will\"");
+      alert("You are now THE GIRLFRIEND 😘");
+      const phoneNumber = '94779392448';
+      const message = encodeURIComponent("Hi Mr. BOYFRIEND 💕");
+      const url = `https://wa.me/${phoneNumber}?text=${message}`;
+      window.open(url, '_blank');
+    }
+
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.top = '100vh';
+      heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+      document.getElementById('hearts').appendChild(heart);
+      setTimeout(() => heart.remove(), 10000);
+    }
+
+    setInterval(createHeart, 300);
+
+    // Show the "Ready" question on load
+    function showReadyQuestion() {
+      const qBox = document.getElementById('question');
+      const aBox = document.getElementById('answers');
+      qBox.style.opacity = 0;
+      aBox.innerHTML = '';
+
+      setTimeout(() => {
+        qBox.textContent = "Happy Birthday My Euphoria,\nAre you ready?";
+        qBox.style.opacity = 1;
+
+        const readyBtn = document.createElement('button');
+        readyBtn.textContent = "Ready";
+        readyBtn.onclick = () => {
+          playClickSound();
+          startExperience();
+        };
+        aBox.appendChild(readyBtn);
+      }, 1000);
+    }
+
+    // Start music, show loader, then questions
+    function startExperience() {
+      const loader = document.getElementById('loader');
+      const main = document.getElementById('main');
+      const bgMusic = document.getElementById('bgMusic');
+
+      if (bgMusic) {
+        bgMusic.volume = 0.3;
+        bgMusic.play().catch(() => {
+          // Ignore autoplay errors
+        });
+      }
+
+      document.getElementById('quiz').style.display = 'flex';
+      document.getElementById('final').innerHTML = '';
+      document.getElementById('acceptBtn').style.display = 'none';
+      current = 0;
+
+      // Hide quiz & show loader text for 5 seconds
+      document.getElementById('quiz').style.display = 'none';
+      loader.style.display = 'flex';
+
+      setTimeout(() => {
+        loader.style.display = 'none';
+        document.getElementById('quiz').style.display = 'flex';
+        showQuestion();
+      }, 5000);
+    }
+
+    window.onload = () => {
+      const loader = document.getElementById('loader');
+      const main = document.getElementById('main');
+
+      main.style.display = 'flex';
+      loader.style.display = 'none';
+
+      showReadyQuestion();
+    };
+  </script>
+
+</body>
+
+</html>
