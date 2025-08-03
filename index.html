@@ -3,7 +3,6 @@
 
 <head>
   <meta name="color-scheme" content="only light">
-  <meta name="theme-color" content="#ffe6eb">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Will You Be My Diamond?</title>
@@ -21,7 +20,6 @@
     }
 
     @media (prefers-color-scheme: dark) {
-
       html,
       body {
         background-color: var(--force-light-bg) !important;
@@ -29,17 +27,10 @@
       }
     }
 
-    body, html, .main-content, .loader, .speech-bubble {
-      background-color: transparent !important;
-      color: inherit !important;
-    }
-
-
-
     body {
       margin: 0;
-      /* background-color: #ffe6eb; */
-      /* color: red; */
+      background-color: #ffe6eb;
+      color: red;
       font-family: 'Segoe UI', sans-serif;
       text-align: center;
       overflow: hidden;
@@ -143,6 +134,7 @@
       height: 100%;
       pointer-events: none;
       z-index: 0;
+      rotate: 45deg;
     }
 
     .heart {
@@ -185,6 +177,13 @@
         opacity: 0;
       }
     }
+
+
+    @keyframes fadeIn {
+  0% { opacity: 0; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
 
     .penguin {
       position: fixed;
@@ -230,6 +229,23 @@
         transform: rotate(0deg);
       }
     }
+
+    @keyframes popHeart {
+      0% {
+        transform: scale(0.5) rotate(45deg);
+        opacity: 1;
+      }
+
+      70% {
+        transform: scale(2) rotate(45deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(2.5) rotate(45deg);
+        opacity: 0;
+      }
+    }
   </style>
 </head>
 
@@ -243,12 +259,14 @@
       <div class="answers" id="answers"></div>
     </div>
     <div class="final" id="final"></div>
-    <button class="accept-btn" id="acceptBtn" onclick="handleAccept()">I lost words</button>
+    <button class="accept-btn" id="acceptBtn">I lost words</button>
+
   </div>
 
   <div class="hearts" id="hearts"></div>
   <img class="penguin" src="https://i.ibb.co/kgDgBcYr/360-F-910562062-011-At-TMC7-MDv-X1k-C7plgt-Fe-EInp9-Ooc-U.png"
-    alt="Penguin" onclick="alert('Hey sleeping beauty, Don\'t get distracted by the Handsome penguin 🐧')" />
+  alt="Penguin" onclick="showPenguinMessage()" />
+
 
 
   <audio id="clickSound" src="click.mp3" preload="auto"></audio>
@@ -286,8 +304,12 @@
         questions[current].options.forEach(opt => {
           const btn = document.createElement('button');
           btn.textContent = opt;
-          btn.onclick = () => {
+          btn.onclick = (e) => {
             playClickSound();
+            // Heart pop at click
+            const rect = e.target.getBoundingClientRect();
+            createHeartAt(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
             if (opt === questions[current].answer) {
               setTimeout(() => {
                 current++;
@@ -334,14 +356,122 @@
       typeLine();
     }
 
-    function handleAccept() {
-      alert("Now Dimaa says \"Yes I will\"");
-      alert("You are now THE GIRLFRIEND 😘");
-      const phoneNumber = '94779392448';
-      const message = encodeURIComponent("Hi Mr. BOYFRIEND //dont lose words now");
-      const url = `https://wa.me/${phoneNumber}?text=${message}`;
-      window.open(url, '_blank');
+//     function handleAccept() {
+//   const finalDiv = document.getElementById('final');
+//   finalDiv.innerHTML = ''; // clear previous
+//   const line1 = document.createElement('div');
+//   line1.textContent = 'Now Dimaa says "Yes I will"';
+//   line1.style.fontSize = '1.8rem';
+//   line1.style.marginTop = '20px';
+
+//   const line2 = document.createElement('div');
+//   line2.textContent = 'You are now THE GIRLFRIEND 😘';
+//   line2.style.fontSize = '2rem';
+//   line2.style.fontWeight = 'bold';
+//   line2.style.marginTop = '10px';
+
+//   finalDiv.appendChild(line1);
+//   finalDiv.appendChild(line2);
+//   finalDiv.classList.add('show');
+
+//   // optional: open WhatsApp after a short pause
+//   setTimeout(() => {
+//     const phoneNumber = '94779392448';
+//     const message = encodeURIComponent("Hi Mr. BOYFRIEND //dont lose words now");
+//     const url = `https://wa.me/${phoneNumber}?text=${message}`;
+//     window.open(url, '_blank');
+//   }, 3000);
+// }
+
+function handleAccept(e) {
+  playClickSound();
+
+  const rect = e.target.getBoundingClientRect();
+  createHeartAt(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+  const btn = document.getElementById('acceptBtn');
+  btn.style.display = 'none';
+
+  const finalDiv = document.getElementById('final');
+  finalDiv.innerHTML = '';
+
+  // Message 1
+  const msg1 = document.createElement('div');
+  msg1.textContent = 'Now Dimaa says "Yes I will"';
+  msg1.style.fontSize = '1.8rem';
+  msg1.style.marginTop = '20px';
+  msg1.style.animation = 'fadeIn 0.5s ease forwards';
+  finalDiv.appendChild(msg1);
+  finalDiv.classList.add('show');
+
+  setTimeout(() => {
+    msg1.remove();
+
+    // Message 2 - word by word
+    const line = "Now you are THE GIRLFRIEND 😘".split(" ");
+    let i = 0;
+
+    function showWord() {
+      if (i < line.length) {
+        const word = document.createElement('div');
+        word.textContent = line[i];
+        word.style.fontSize = '2rem';
+        word.style.fontWeight = 'bold';
+        word.style.marginTop = '8px';
+        word.style.animation = 'fadeIn 0.5s ease forwards';
+        finalDiv.appendChild(word);
+        i++;
+        setTimeout(showWord, 800);
+      } else {
+        // After all words shown, create "Shall we?" button
+        const shallWeBtn = document.createElement('button');
+        shallWeBtn.textContent = 'Shall we?';
+        shallWeBtn.style.marginTop = '30px';
+        shallWeBtn.style.padding = '15px 40px';
+        shallWeBtn.style.fontSize = '1.2rem';
+        shallWeBtn.style.color = 'white';
+        shallWeBtn.style.backgroundColor = 'black';
+        shallWeBtn.style.border = 'none';
+        shallWeBtn.style.borderRadius = '30px';
+        shallWeBtn.style.cursor = 'pointer';
+        finalDiv.appendChild(shallWeBtn);
+
+        shallWeBtn.addEventListener('click', () => {
+          playClickSound();
+          const phoneNumber = '94779392448';
+          const message = encodeURIComponent("Hi Mr. BOYFRIEND //dont lose words now");
+          const url = `https://wa.me/${phoneNumber}?text=${message}`;
+          window.open(url, '_blank');
+        });
+      }
     }
+
+    showWord();
+  }, 4000);
+}
+
+
+function showPenguinMessage() {
+  const finalDiv = document.getElementById('final');
+
+  const msg = document.createElement('div');
+  msg.textContent = "Hey sleeping beauty, don’t get distracted by the Handsome penguin 🐧";
+  msg.style.fontSize = '1.4rem';
+  msg.style.marginTop = '20px';
+  msg.style.animation = 'fadeIn 0.5s ease forwards';
+  msg.style.transition = 'opacity 0.5s ease';
+  msg.style.opacity = '1';
+
+  finalDiv.appendChild(msg);
+  finalDiv.classList.add('show');
+
+  setTimeout(() => {
+    msg.style.opacity = '0';
+    setTimeout(() => {
+      msg.remove();
+    }, 500); // wait for fade out to complete
+  }, 3000);
+}
 
     function createHeart() {
       const heart = document.createElement('div');
@@ -351,6 +481,18 @@
       heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
       document.getElementById('hearts').appendChild(heart);
       setTimeout(() => heart.remove(), 10000);
+    }
+
+    function createHeartAt(x, y) {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      heart.style.left = x + 'px';
+      heart.style.top = y + 'px';
+      heart.style.position = 'fixed';
+      heart.style.animation = 'popHeart 1s ease forwards';
+      heart.style.zIndex = 10;
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 1000);
     }
 
     setInterval(createHeart, 300);
@@ -384,9 +526,16 @@
 
       if (bgMusic) {
         bgMusic.volume = 0.3;
+        bgMusic.currentTime = 0;
         bgMusic.play().catch(() => {
           // Ignore autoplay errors
         });
+
+        // Stop after one loop
+        bgMusic.onended = function() {
+          bgMusic.pause();
+          bgMusic.currentTime = 0;
+        };
       }
 
       document.getElementById('quiz').style.display = 'flex';
@@ -414,6 +563,11 @@
 
       showReadyQuestion();
     };
+
+    document.getElementById('acceptBtn').addEventListener('click', function(e) {
+  handleAccept(e);
+});
+
   </script>
 
 </body>
