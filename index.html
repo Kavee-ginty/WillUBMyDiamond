@@ -3,26 +3,43 @@
 
 <head>
   <meta name="color-scheme" content="only light">
+  <meta name="theme-color" content="#ffe6eb">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Will You Be My Diamond?</title>
   <style>
     :root {
       color-scheme: light;
+      --force-light-bg: #ffe6eb;
+      --force-light-text: red;
+    }
+
+    html,
+    body {
+      background-color: var(--force-light-bg) !important;
+      color: var(--force-light-text) !important;
     }
 
     @media (prefers-color-scheme: dark) {
+
+      html,
       body {
-        background-color: #ffe6eb !important;
-        color: red !important;
+        background-color: var(--force-light-bg) !important;
+        color: var(--force-light-text) !important;
       }
     }
+
+    body, html, .main-content, .loader, .speech-bubble {
+      background-color: transparent !important;
+      color: inherit !important;
+    }
+
 
 
     body {
       margin: 0;
-      background-color: #ffe6eb;
-      color: red;
+      /* background-color: #ffe6eb; */
+      /* color: red; */
       font-family: 'Segoe UI', sans-serif;
       text-align: center;
       overflow: hidden;
