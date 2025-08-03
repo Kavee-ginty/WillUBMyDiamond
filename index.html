@@ -2,14 +2,22 @@
 <html lang="en">
 
 <head>
+  <meta name="color-scheme" content="only light">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Will You Be My Diamond?</title>
   <style>
-
     :root {
-  color-scheme: light;
-}
+      color-scheme: light;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #ffe6eb !important;
+        color: red !important;
+      }
+    }
+
 
     body {
       margin: 0;
@@ -313,7 +321,7 @@
       alert("Now Dimaa says \"Yes I will\"");
       alert("You are now THE GIRLFRIEND 😘");
       const phoneNumber = '94779392448';
-      const message = encodeURIComponent("Hi Mr. BOYFRIEND ❤️\uD83D\uDE48");
+      const message = encodeURIComponent("Hi Mr. BOYFRIEND //dont lose words now");
       const url = `https://wa.me/${phoneNumber}?text=${message}`;
       window.open(url, '_blank');
     }
