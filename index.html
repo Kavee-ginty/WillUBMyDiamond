@@ -292,7 +292,11 @@
   <script>
     const questions = [
       { q: "How do penguins prove love?", options: ["Flowers", "Round rock", "Fish"], answer: "Round rock" },
-      { q: "She bought us lime juice from?", options: ["Roots", "Keels", "Bakers"], answer: "Roots" },
+ {
+      q: '<img src="img.jpg" alt="img" style="width:100px; display:block; margin: 0 auto 10px;">Never forget the ...',
+      options: ["Roots", "Words", "Names"],
+      answer: "Roots"
+    },
       { q: "The red heart was made of?", options: ["Ink", "Pebbles", "Pixels"], answer: "Pebbles" },
       { q: "Void loop() {...} ?", options: ["printf()", "scanf()", "♥️"], answer: "♥️" },
       { q: "The girl in his head is?", options: ["Dimanya", "Dimanya", "Dimanya"], answer: "Dimanya" }
@@ -315,7 +319,7 @@
       aBox.innerHTML = '';
 
       setTimeout(() => {
-        qBox.textContent = questions[current].q;
+        qBox.innerHTML = questions[current].q;
         qBox.style.opacity = 1;
 
         questions[current].options.forEach(opt => {
@@ -497,7 +501,7 @@
       aBox.innerHTML = '';
 
       setTimeout(() => {
-        qBox.textContent = "Happy Birthday My Euphoria,\nAre you ready?";
+        qBox.textContent = "Everytime is a right time, if I'm with u\nMy Euphoria,\nAre you ready?";
         qBox.style.opacity = 1;
 
         const readyBtn = document.createElement('button');
